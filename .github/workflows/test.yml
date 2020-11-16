@@ -2,8 +2,7 @@ name: 'build-test'
 on:
   pull_request:
     types:
-      - synchronize
-      - created
+      - edited
 
 jobs:
   build:
