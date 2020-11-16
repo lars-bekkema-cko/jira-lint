@@ -16,6 +16,7 @@ const ignoreBranch = (branch: string, ignoreBranchTerms: string[]): boolean => {
 async function run(): Promise<void> {
   try {
     const token = core.getInput('github-token', {required: true});
+    const octokit = github.getOctokit(token);
 
     const ignoreBranchTerms = core.getInput('branch-term-whitelist').split(',');
 
@@ -25,8 +26,6 @@ async function run(): Promise<void> {
       core.setFailed('No pull request found.');
       return;
     }
-
-    const octokit = github.getOctokit(token);
 
     const prNumber = pullRequest.number;
     const branch = pullRequest.head.ref.replace('refs/heads/', '');
@@ -50,6 +49,7 @@ async function run(): Promise<void> {
         await octokit.issues.createComment({
           ...github.context.repo,
           issue_number: prNumber,
+
           body: 'PR must include a valid JIRA ticket (OT-1234)'
         });
       }
