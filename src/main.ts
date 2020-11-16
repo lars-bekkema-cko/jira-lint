@@ -3,10 +3,8 @@ import * as github from '@actions/github';
 
 const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
 
-const ignoreBranch = (branch: string, ignoreBranchTerms: string[]) => {
-  for (let i = 0; i < ignoreBranchTerms.length; i++) {
-    const branchTerm = ignoreBranchTerms[i];
-
+const ignoreBranch = (branch: string, ignoreBranchTerms: string[]): boolean => {
+  for (const branchTerm of ignoreBranchTerms) {
     if (branch.startsWith(branchTerm)) {
       return true;
     }
@@ -47,7 +45,7 @@ async function run(): Promise<void> {
       core.debug(`title -> ${title}`);
       core.debug(`body -> ${body}`);
 
-      if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
+      if (!jiraRegex.test(title) && body && !jiraRegex.test(body)) {
         core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
         await octokit.issues.createComment({
           ...github.context.repo,

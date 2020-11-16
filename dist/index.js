@@ -1427,8 +1427,7 @@ const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
 const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
 const ignoreBranch = (branch, ignoreBranchTerms) => {
-    for (let i = 0; i < ignoreBranchTerms.length; i++) {
-        const branchTerm = ignoreBranchTerms[i];
+    for (const branchTerm of ignoreBranchTerms) {
         if (branch.startsWith(branchTerm)) {
             return true;
         }
