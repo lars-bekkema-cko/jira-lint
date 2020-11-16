@@ -1457,7 +1457,7 @@ function run() {
                 const body = pullRequest.body;
                 core.debug(`title -> ${title}`);
                 core.debug(`body -> ${body}`);
-                if (!jiraRegex.test(title) && !jiraRegex.test(body)) {
+                if (!jiraRegex.test(title) && body && !jiraRegex.test(body)) {
                     core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
                     yield octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: prNumber, body: 'PR must include a valid JIRA ticket (OT-1234)' }));
                 }
