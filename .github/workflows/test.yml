@@ -25,4 +25,5 @@ jobs:
       - name: run JIRA lint action
         uses: ./
         with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
           branch-term-whitelist: 'dependabot'

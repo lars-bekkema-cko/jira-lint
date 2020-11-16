@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import * as github from 'github-script';
+import * as github from '@actions/github';
 
 const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
 
@@ -17,7 +17,10 @@ const ignoreBranch = (branch: string, ignoreBranchTerms: string[]) => {
 
 async function run(): Promise<void> {
   try {
+    const token = core.getInput('github-token', {required: true});
+
     const ignoreBranchTerms = core.getInput('branch-term-whitelist').split(',');
+
     const pullRequest = github.context.payload.pull_request;
 
     if (pullRequest == null) {
@@ -25,7 +28,9 @@ async function run(): Promise<void> {
       return;
     }
 
-    const pull_request_number = pullRequest.number;
+    const client = new github.GitHub(token);
+
+    const prNumber = pullRequest.number;
     const branch = pullRequest.head.ref.replace('refs/heads/', '');
 
     core.debug(`branch -> ${branch}`);
@@ -42,11 +47,11 @@ async function run(): Promise<void> {
       core.debug(`title -> ${title}`);
       core.debug(`body -> ${body}`);
 
-      if (!jiraRegex.test(title) && !jiraRegex.test(body)) {
+      if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
         core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
-        await github.issues.createComment({
+        await client.issues.createComment({
           ...github.context.repo,
-          issue_number: pull_request_number,
+          issue_number: prNumber,
           body: 'PR must include a valid JIRA ticket (OT-1234)'
         });
       }
