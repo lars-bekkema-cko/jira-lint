@@ -44,7 +44,8 @@ async function run(): Promise<void> {
       core.debug(`title -> ${title}`);
       core.debug(`body -> ${body}`);
 
-      if (!jiraRegex.test(title) && body && !jiraRegex.test(body)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
         core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
         await octokit.issues.createComment({
           ...github.context.repo,
