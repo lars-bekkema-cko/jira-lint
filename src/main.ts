@@ -5,9 +5,6 @@ const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
 
 const ignoreBranch = (branch: string, ignoreBranchTerms: string[]): boolean => {
   for (const branchTerm of ignoreBranchTerms) {
-    core.debug(
-      `${branchTerm}, ${ignoreBranchTerms}, ${branch.startsWith(branchTerm)}`
-    );
     if (branch.startsWith(branchTerm)) {
       return true;
     }
