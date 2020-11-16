@@ -1428,6 +1428,7 @@ const github = __importStar(__webpack_require__(438));
 const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
 const ignoreBranch = (branch, ignoreBranchTerms) => {
     for (const branchTerm of ignoreBranchTerms) {
+        core.debug(`${branchTerm}, ${ignoreBranchTerms}, ${branch.startsWith(branchTerm)}`);
         if (branch.startsWith(branchTerm)) {
             return true;
         }
@@ -1457,7 +1458,8 @@ function run() {
                 const body = pullRequest.body;
                 core.debug(`title -> ${title}`);
                 core.debug(`body -> ${body}`);
-                if (!jiraRegex.test(title) && body && !jiraRegex.test(body)) {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                if (!jiraRegex.test(title) && !jiraRegex.test(body)) {
                     core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
                     yield octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: prNumber, body: 'PR must include a valid JIRA ticket (OT-1234)' }));
                 }
