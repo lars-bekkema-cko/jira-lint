@@ -28,7 +28,7 @@ async function run(): Promise<void> {
       return;
     }
 
-    const client = new github.GitHub(token);
+    const octokit = github.getOctokit(token);
 
     const prNumber = pullRequest.number;
     const branch = pullRequest.head.ref.replace('refs/heads/', '');
@@ -49,7 +49,7 @@ async function run(): Promise<void> {
 
       if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
         core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
-        await client.issues.createComment({
+        await octokit.issues.createComment({
           ...github.context.repo,
           issue_number: prNumber,
           body: 'PR must include a valid JIRA ticket (OT-1234)'
