@@ -50,7 +50,6 @@ async function run(): Promise<void> {
         await octokit.issues.createComment({
           ...github.context.repo,
           issue_number: prNumber,
-
           body: 'PR must include a valid JIRA ticket (OT-1234)'
         });
       }
