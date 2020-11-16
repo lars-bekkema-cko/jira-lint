@@ -13,14 +13,16 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: install
-      - run: yarn install
+        run: yarn install
 
       - name: build, format, lint, package and test
-      - run: yarn all
+        run: yarn all
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+
+      - name: run JIRA lint action
+        uses: ./
         with:
           branch-term-whitelist: 'dependabot'
