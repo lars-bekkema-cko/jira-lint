@@ -8,7 +8,7 @@ inputs:
   branch-term-whitelist:
     description: 'List of terms to look for to whitelist the branch (ignore JIRA ticket check)'
     required: false
-    default: 'no-jira'
+    default: ''
 runs:
   using: 'node12'
   main: 'dist/index.js'
