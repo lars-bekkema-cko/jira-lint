@@ -1,19 +1,59 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import * as core from '@actions/core';
+import * as github from 'github-script';
+
+const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
+
+const ignoreBranch = (branch: string, ignoreBranchTerms: string[]) => {
+  for (let i = 0; i < ignoreBranchTerms.length; i++) {
+    const branchTerm = ignoreBranchTerms[i];
+
+    if (branch.startsWith(branchTerm)) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    const ignoreBranchTerms = core.getInput('branch-term-whitelist').split(',');
+    const pullRequest = github.context.payload.pull_request;
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    if (pullRequest == null) {
+      core.setFailed('No pull request found.');
+      return;
+    }
 
-    core.setOutput('time', new Date().toTimeString())
+    const pull_request_number = pullRequest.number;
+    const branch = pullRequest.head.ref.replace('refs/heads/', '');
+
+    core.debug(`branch -> ${branch}`);
+    core.debug(`ignoreBranchTerms -> ${ignoreBranchTerms}`);
+
+    if (ignoreBranch(branch, ignoreBranchTerms)) {
+      core.debug(
+        `branch is in the whitelist -> ${branch} ${ignoreBranchTerms}`
+      );
+    } else {
+      const title = pullRequest.title;
+      const body = pullRequest.body;
+
+      core.debug(`title -> ${title}`);
+      core.debug(`body -> ${body}`);
+
+      if (!jiraRegex.test(title) && !jiraRegex.test(body)) {
+        core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
+        await github.issues.createComment({
+          ...github.context.repo,
+          issue_number: pull_request_number,
+          body: 'PR must include a valid JIRA ticket (OT-1234)'
+        });
+      }
+    }
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(error.message);
   }
 }
 
-run()
+run();
