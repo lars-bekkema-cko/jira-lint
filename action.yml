@@ -1,11 +1,14 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'JIRA lint action'
+description: 'Consistency check between pull requests and JIRA issues'
+author: 'Lars Bekkema'
 inputs:
-  milliseconds: # change this
+  github-token:
+    description: 'Github token of the repository (automatically created by Github)'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  branch-term-whitelist:
+    description: 'List of terms to look for to whitelist the branch (ignore JIRA ticket check)'
+    required: false
+    default: ''
 runs:
   using: 'node12'
   main: 'dist/index.js'
