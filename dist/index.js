@@ -1438,13 +1438,13 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const token = core.getInput('github-token', { required: true });
+            const octokit = github.getOctokit(token);
             const ignoreBranchTerms = core.getInput('branch-term-whitelist').split(',');
             const pullRequest = github.context.payload.pull_request;
             if (pullRequest == null) {
                 core.setFailed('No pull request found.');
                 return;
             }
-            const octokit = github.getOctokit(token);
             const prNumber = pullRequest.number;
             const branch = pullRequest.head.ref.replace('refs/heads/', '');
             core.debug(`branch -> ${branch}`);
