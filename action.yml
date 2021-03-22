@@ -5,8 +5,8 @@ inputs:
   github-token:
     description: 'Github token of the repository (automatically created by Github)'
     required: true
-  branch-term-whitelist:
-    description: 'List of terms to look for to whitelist the branch (ignore JIRA ticket check)'
+  skip-branches:
+    description: "List of branch names to skip JIRA ticket check (eg. 'no-jira,dependabot,release')"
     required: false
     default: ''
 runs:

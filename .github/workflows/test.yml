@@ -27,4 +27,4 @@ jobs:
         uses: ./
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
-          branch-term-whitelist: 'no-jira'
+          skip-branches: 'no-jira'

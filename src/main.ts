@@ -4,9 +4,9 @@ import * as github from '@actions/github';
 const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)\s.+/gm;
 const errorMessage = `Please make sure that the PR title follows the standard: OT-XXXX - <title>`;
 
-const ignoreBranch = (branch: string, ignoreBranchTerms: string[]): boolean => {
-  for (const branchTerm of ignoreBranchTerms) {
-    if (branch.startsWith(branchTerm)) {
+const skipBranch = (branch: string, branchesToSkip: string[]): boolean => {
+  for (const branchName of branchesToSkip) {
+    if (branch.startsWith(branchName)) {
       return true;
     }
   }
@@ -19,7 +19,7 @@ async function run(): Promise<void> {
     const token = core.getInput('github-token', {required: true});
     const octokit = github.getOctokit(token);
 
-    const ignoreBranchTerms = core.getInput('branch-term-whitelist').split(',');
+    const branchesToSkip = core.getInput('skip-branches').split(',');
 
     const pullRequest = github.context.payload.pull_request;
 
@@ -32,12 +32,10 @@ async function run(): Promise<void> {
     const branch = pullRequest.head.ref.replace('refs/heads/', '');
 
     core.debug(`branch -> ${branch}`);
-    core.debug(`ignoreBranchTerms -> ${ignoreBranchTerms}`);
+    core.debug(`branchesToSkip -> ${branchesToSkip}`);
 
-    if (ignoreBranch(branch, ignoreBranchTerms)) {
-      core.debug(
-        `branch is in the whitelist -> ${branch} ${ignoreBranchTerms}`
-      );
+    if (skipBranch(branch, branchesToSkip)) {
+      core.debug(`skipped branch: ${branch} (${branchesToSkip})`);
     } else {
       const title = pullRequest.title;
 

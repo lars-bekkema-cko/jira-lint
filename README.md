@@ -8,7 +8,7 @@ Consistency check between pull requests and JIRA issues
 
 **Required** Github token of the repository (automatically created by Github).
 
-### `branch-term-whitelist`
+### `skip-branches`
 
 List of terms to look for to whitelist the branch (ignore JIRA ticket check)
 
@@ -18,7 +18,7 @@ List of terms to look for to whitelist the branch (ignore JIRA ticket check)
 uses: lars-bekkema-cko/jira-lint-action@v1
 with:
   github-token: ${{secrets.GITHUB_TOKEN}}
-  branch-term-whitelist: 'dependabot,no-jira'
+  skip-branches: 'dependabot,no-jira'
 ```
 
 ## Contribution
