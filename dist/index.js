@@ -1425,7 +1425,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
-const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
+const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)\s.+/gm;
+const errorMessage = `Please make sure that the PR title follows the standard: OT-XXXX - <title>`;
 const ignoreBranch = (branch, ignoreBranchTerms) => {
     for (const branchTerm of ignoreBranchTerms) {
         if (branch.startsWith(branchTerm)) {
@@ -1454,14 +1455,10 @@ function run() {
             }
             else {
                 const title = pullRequest.title;
-                const body = pullRequest.body;
                 core.debug(`title -> ${title} -> ${jiraRegex.test(title)}`);
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                core.debug(`body -> ${body} -> ${jiraRegex.test(body)}`);
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                if (!jiraRegex.test(title) && !jiraRegex.test(body)) {
-                    core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
-                    yield octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: prNumber, body: 'PR must include a valid JIRA ticket (OT-1234)' }));
+                if (!jiraRegex.test(title)) {
+                    core.setFailed(errorMessage);
+                    yield octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: prNumber, body: errorMessage }));
                 }
             }
         }

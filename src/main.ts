@@ -40,14 +40,10 @@ async function run(): Promise<void> {
       );
     } else {
       const title = pullRequest.title;
-      const body = pullRequest.body;
 
       core.debug(`title -> ${title} -> ${jiraRegex.test(title)}`);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      core.debug(`body -> ${body} -> ${jiraRegex.test(body!)}`);
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
+      if (!jiraRegex.test(title)) {
         core.setFailed(errorMessage);
         await octokit.issues.createComment({
           ...github.context.repo,
