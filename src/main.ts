@@ -1,7 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/gm;
+const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)\s.+/gm;
+const errorMessage = `Please make sure that the PR title follows the standard: OT-XXXX - <title>`;
 
 const ignoreBranch = (branch: string, ignoreBranchTerms: string[]): boolean => {
   for (const branchTerm of ignoreBranchTerms) {
@@ -47,11 +48,11 @@ async function run(): Promise<void> {
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       if (!jiraRegex.test(title) && !jiraRegex.test(body!)) {
-        core.setFailed('PR must include a valid JIRA ticket (OT-1234)');
+        core.setFailed(errorMessage);
         await octokit.issues.createComment({
           ...github.context.repo,
           issue_number: prNumber,
-          body: 'PR must include a valid JIRA ticket (OT-1234)'
+          body: errorMessage
         });
       }
     }
