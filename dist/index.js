@@ -1425,8 +1425,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(186));
 const github = __importStar(__webpack_require__(438));
-const jiraRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)\s.+/gm;
-const errorMessage = `Please make sure that the PR title follows the standard: OT-XXXX - <title>`;
+const regex = /[A-Za-z]{1,10}-\d+/;
+const errorMessage = `Please make sure that the PR title follows the standard: OT-XXXX <title>`;
 const skipBranch = (branch, branchesToSkip) => {
     for (const branchName of branchesToSkip) {
         if (branch.startsWith(branchName)) {
@@ -1446,7 +1446,6 @@ function run() {
                 core.setFailed('No pull request found.');
                 return;
             }
-            const prNumber = pullRequest.number;
             const branch = pullRequest.head.ref.replace('refs/heads/', '');
             core.debug(`branch -> ${branch}`);
             core.debug(`branchesToSkip -> ${branchesToSkip}`);
@@ -1455,10 +1454,14 @@ function run() {
             }
             else {
                 const title = pullRequest.title;
-                core.debug(`title -> ${title} -> ${jiraRegex.test(title)}`);
-                if (!jiraRegex.test(title)) {
+                const prNumber = pullRequest.number;
+                const regexValue = regex.test(title);
+                core.debug(`title -> ${title} -> ${regexValue}`);
+                if (!regexValue) {
                     core.setFailed(errorMessage);
+                    core.debug(`Regex ${regex} failed with title ${title} (${regexValue})`);
                     yield octokit.issues.createComment(Object.assign(Object.assign({}, github.context.repo), { issue_number: prNumber, body: errorMessage }));
+                    return;
                 }
             }
         }
