@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 
 const regex = /[A-Za-z]{1,10}-\d+/;
-const errorMessage = `Please make sure that the PR title follows the standard: OT-XXXX <title>`;
+const errorMessage = `Please make sure that the PR title follows the standard: GEN-XXXX <title>`;
 
 const skipBranch = (branch: string, branchesToSkip: string[]): boolean => {
   for (const branchName of branchesToSkip) {
